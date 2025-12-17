@@ -126,8 +126,10 @@ function animateWaveLine() {
             waveLine.setAttribute('d', generateWavePath(amplitude, 3));
 
             if (smoothElapsed >= smoothDuration) {
-                // Final state: straight line
+                // Final state: straight line and ensure visibility
                 waveLine.setAttribute('d', `M 0,${centerY} L ${width},${centerY}`);
+                waveLine.style.opacity = '1';
+                waveLine.style.strokeDashoffset = '0';
                 return; // Stop animation
             }
         }
