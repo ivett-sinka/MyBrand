@@ -38,8 +38,20 @@ body {
         background-position: 0% 50%;
     }
 
-    50% {
-        background-position: 100% 50%;
+    20% {
+        background-position: 80% 20%;
+    }
+
+    40% {
+        background-position: 30% 90%;
+    }
+
+    60% {
+        background-position: 100% 60%;
+    }
+
+    80% {
+        background-position: 20% 10%;
     }
 
     100% {
