@@ -111,10 +111,8 @@ body {
 .greeting-text {
     display: inline-block;
     font-family: "Borel", cursive;
-}
-
-.comma {
-    display: inline-block;
+    min-width: 135px;
+    text-align: left;
 }
 
 .cursor {
