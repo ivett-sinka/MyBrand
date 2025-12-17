@@ -68,9 +68,8 @@ function animateWaveLine() {
     const width = 1000;
     const centerY = 10;
     let time = 0;
-    let phase = 'drawing'; // phases: 'drawing', 'wave', 'smoothing'
+    let phase = 'drawing'; // phases: 'drawing', 'smoothing'
     const drawDuration = 2000; // 2 seconds to draw
-    const waveDuration = 1500; // 1.5 seconds of waving
     const smoothDuration = 800; // 0.8 seconds to smooth out
 
     const startTime = Date.now();
@@ -106,24 +105,14 @@ function animateWaveLine() {
             waveLine.setAttribute('d', generateWavePath(amplitude, 2, progress));
 
             if (elapsed >= drawDuration) {
-                phase = 'wave';
-            }
-        } else if (phase === 'wave') {
-            // Wave phase: big wave motion (2-3.5s)
-            const waveElapsed = elapsed - drawDuration;
-            const waveProgress = waveElapsed / waveDuration;
-            const amplitude = 8 * Math.sin(waveProgress * Math.PI); // Bigger wave
-            waveLine.setAttribute('d', generateWavePath(amplitude, 3));
-
-            if (waveElapsed >= waveDuration) {
                 phase = 'smoothing';
             }
         } else if (phase === 'smoothing') {
-            // Smoothing phase: gradually flatten (3.5-4.3s)
-            const smoothElapsed = elapsed - drawDuration - waveDuration;
+            // Smoothing phase: gradually flatten (2-2.8s)
+            const smoothElapsed = elapsed - drawDuration;
             const smoothProgress = smoothElapsed / smoothDuration;
-            const amplitude = 8 * (1 - smoothProgress); // Decrease amplitude to 0
-            waveLine.setAttribute('d', generateWavePath(amplitude, 3));
+            const amplitude = 3 * (1 - smoothProgress); // Decrease amplitude to 0
+            waveLine.setAttribute('d', generateWavePath(amplitude, 2));
 
             if (smoothElapsed >= smoothDuration) {
                 // Final state: straight line and ensure visibility
