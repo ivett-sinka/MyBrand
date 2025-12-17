@@ -1,0 +1,8 @@
+# robots.txt for Sinka Ivett - Coming Soon page
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Sitemap location (create this file later when you have multiple pages)
+# Sitemap: https://yourwebsite.com/sitemap.xml
