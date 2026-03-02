@@ -56,15 +56,16 @@ function typeWriter() {
 
 // ─── Logo scroll animation ───────────────────────────────────────────────────
 //
-// Scroll progress 0   → element enters viewport from below
-//   rotation  0°, scale 1  (original state: logo-grafikai-elem.svg)
-// Scroll progress 0.5 → element centre at viewport centre
-//   rotation -90°, scale 0.4  (middle state: logo-grafikai-elem-kozepso-allas.svg)
-// Scroll progress 1   → element exits viewport from above
-//   rotation -180°, scale 1  (mirror of original)
+// progress 0   → logo BOTTOM enters viewport BOTTOM  (animation begins)
+// progress 0.5 → logo CENTER at viewport CENTER      (middle state)
+// progress 1   → logo TOP reaches viewport TOP       (final state reached)
 //
-// The <g> group rotates CCW around the SVG canvas centre (326, 326).
-// The wrapper scales uniformly to mimic the size change shown in the middle state.
+// Reverse scrolling mirrors all three states exactly.
+//
+// The <g> group rotates CCW around the SVG canvas centre (326, 326):
+//   0° (start) → -90° (middle, matches logo-grafikai-elem-kozepso-allas.svg)
+//             → -180° (end, mirror of original)
+// The wrapper scales 1 → 0.4 → 1 so the logo shrinks at the midpoint.
 
 function initLogoScrollAnimation() {
     const logoWrapper = document.getElementById('logo-wrapper');
@@ -72,12 +73,33 @@ function initLogoScrollAnimation() {
 
     if (!logoWrapper || !logoPaths) return;
 
+    // Layout values cached so CSS transform on the wrapper never interferes.
+    // offsetTop / offsetHeight are layout-based and unaffected by transform.
+    let elemTop    = 0;
+    let elemHeight = 0;
+
+    function recalcLayout() {
+        elemHeight = logoWrapper.offsetHeight;
+        elemTop    = 0;
+        let el     = logoWrapper;
+        while (el) {
+            elemTop += el.offsetTop;
+            el       = el.offsetParent;
+        }
+    }
+
     function getScrollProgress() {
-        const rect          = logoWrapper.getBoundingClientRect();
-        const vh            = window.innerHeight;
-        const totalDistance = vh + rect.height;
-        const traveled      = vh - rect.top;
-        return Math.max(0, Math.min(1, traveled / totalDistance));
+        const vh      = window.innerHeight;
+        const scrollY = window.scrollY || window.pageYOffset;
+
+        // scrollY when logo BOTTOM touches viewport BOTTOM:
+        const scrollStart = elemTop + elemHeight - vh;
+        // scrollY when logo TOP touches viewport TOP:
+        const scrollEnd   = elemTop;
+        const range       = scrollEnd - scrollStart; // = vh - elemHeight
+
+        if (range <= 0) return 0.5; // logo taller than viewport
+        return Math.max(0, Math.min(1, (scrollY - scrollStart) / range));
     }
 
     function updateLogo() {
@@ -86,7 +108,7 @@ function initLogoScrollAnimation() {
         // CCW rotation: 0° → -90° → -180°
         const rotation = -progress * 180;
 
-        // Scale: 1 → 0.4 → 1  (sine curve peaks at progress = 0.5)
+        // Scale: 1 → 0.4 → 1  (sine arc, minimum at progress = 0.5)
         const scale = 1 - 0.6 * Math.sin(progress * Math.PI);
 
         logoPaths.setAttribute('transform', `rotate(${rotation}, 326, 326)`);
@@ -94,6 +116,9 @@ function initLogoScrollAnimation() {
     }
 
     window.addEventListener('scroll', updateLogo, { passive: true });
+    window.addEventListener('resize', () => { recalcLayout(); updateLogo(); });
+
+    recalcLayout();
     updateLogo(); // Set initial state
 }
 
