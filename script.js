@@ -54,7 +54,51 @@ function typeWriter() {
     }
 }
 
+// ─── Logo scroll animation ───────────────────────────────────────────────────
+//
+// Scroll progress 0   → element enters viewport from below
+//   rotation  0°, scale 1  (original state: logo-grafikai-elem.svg)
+// Scroll progress 0.5 → element centre at viewport centre
+//   rotation -90°, scale 0.4  (middle state: logo-grafikai-elem-kozepso-allas.svg)
+// Scroll progress 1   → element exits viewport from above
+//   rotation -180°, scale 1  (mirror of original)
+//
+// The <g> group rotates CCW around the SVG canvas centre (326, 326).
+// The wrapper scales uniformly to mimic the size change shown in the middle state.
+
+function initLogoScrollAnimation() {
+    const logoWrapper = document.getElementById('logo-wrapper');
+    const logoPaths  = document.getElementById('logo-paths');
+
+    if (!logoWrapper || !logoPaths) return;
+
+    function getScrollProgress() {
+        const rect          = logoWrapper.getBoundingClientRect();
+        const vh            = window.innerHeight;
+        const totalDistance = vh + rect.height;
+        const traveled      = vh - rect.top;
+        return Math.max(0, Math.min(1, traveled / totalDistance));
+    }
+
+    function updateLogo() {
+        const progress = getScrollProgress();
+
+        // CCW rotation: 0° → -90° → -180°
+        const rotation = -progress * 180;
+
+        // Scale: 1 → 0.4 → 1  (sine curve peaks at progress = 0.5)
+        const scale = 1 - 0.6 * Math.sin(progress * Math.PI);
+
+        logoPaths.setAttribute('transform', `rotate(${rotation}, 326, 326)`);
+        logoWrapper.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('scroll', updateLogo, { passive: true });
+    updateLogo(); // Set initial state
+}
+
 // Start the animation when page loads
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(typeWriter, 1000); // Start after page load animation
+    initLogoScrollAnimation();
 });

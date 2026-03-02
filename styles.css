@@ -14,10 +14,21 @@ body {
     color: #ffffff;
     overflow-x: hidden;
     min-height: 100vh;
+}
+
+/* Scrollable content wrapper */
+.page-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+/* Hero section fills the viewport */
+.hero-section {
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
 }
 
 /* Animated Gradient Background */
@@ -288,4 +299,28 @@ body {
     .line-right {
         width: 40px;
     }
+}
+
+/* ─── Logo animation section ─── */
+.logo-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F1EEE9;
+    padding: 40px 20px;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+#animated-logo {
+    width: min(652px, 80vmin);
+    height: auto;
+    display: block;
 }
